@@ -48,15 +48,37 @@
       <span class="brand-sub">a story map workshop</span>
     </div>
     <div class="actions">
-      <button class="btn btn-ghost" data-action="clear" type="button">Empty board</button>
-      <button class="btn btn-ghost" data-action="reset" type="button">Restore example</button>
-      <span class="actions-sep" aria-hidden="true"></span>
-      <button class="btn btn-ghost btn-icon" data-action="undo" type="button" title="Undo (⌘Z)" aria-label="Undo">↶</button>
-      <button class="btn btn-ghost btn-icon" data-action="redo" type="button" title="Redo (⌘⇧Z)" aria-label="Redo">↷</button>
-      <button class="btn btn-ghost" data-action="show-log" type="button" title="Open action log">Log</button>
+      <div class="history-group" role="group" aria-label="History">
+        <button class="hist-btn" data-action="undo" type="button" title="Undo (⌘Z)" aria-label="Undo">
+          <svg class="hist-ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 14 4 9l5-5" />
+            <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+          </svg>
+        </button>
+        <button class="hist-btn" data-action="redo" type="button" title="Redo (⌘⇧Z)" aria-label="Redo">
+          <svg class="hist-ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 14 20 9l-5-5" />
+            <path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
+          </svg>
+        </button>
+      </div>
       <span class="actions-sep" aria-hidden="true"></span>
       <button class="btn" data-action="add-column" type="button">+ Column</button>
       <button class="btn btn-dark" data-action="add-release" type="button">+ Release line</button>
+      <div class="kebab">
+        <button class="btn btn-ghost btn-icon kebab-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-label="More actions" title="More actions">⋮</button>
+        <div class="kebab-menu" role="menu" hidden>
+          <button class="kebab-item" data-action="sessions" type="button" role="menuitem">Story maps…</button>
+          <span class="kebab-sep" aria-hidden="true"></span>
+          <button class="kebab-item" data-action="export" type="button" role="menuitem">Export…</button>
+          <button class="kebab-item" data-action="import" type="button" role="menuitem">Import…</button>
+          <span class="kebab-sep" aria-hidden="true"></span>
+          <button class="kebab-item" data-action="show-log" type="button" role="menuitem">Activity log</button>
+          <span class="kebab-sep" aria-hidden="true"></span>
+          <button class="kebab-item kebab-item-danger" data-action="reset" type="button" role="menuitem">Restore example</button>
+          <button class="kebab-item kebab-item-danger" data-action="clear" type="button" role="menuitem">Empty board</button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -65,7 +87,7 @@
     <span class="chip chip-epic">Epic</span>
     <span class="chip chip-story">Story</span>
     <span class="legend-sep" aria-hidden="true">·</span>
-    <span class="hint">double-click empty space to add a sticky · drag to move (its band decides what it is) · double-click a sticky to rename · hover between columns to insert one · hold <kbd>space</kbd> + drag to pan</span>
+    <span class="hint">Press <kbd>?</kbd> for shortcuts &amp; tips</span>
   </div>
 
   <div id="scroller" class="scroller">

@@ -1,4 +1,4 @@
-const CACHE = 'storymap-v4';
+const CACHE = 'storymap-v7';
 
 const SHELL = [
   './',
@@ -10,6 +10,7 @@ const SHELL = [
   './commands.js',
   './history.js',
   './store.js',
+  './io.js',
   './db.js',
   './icon.svg',
   './fonts/fonts.css',

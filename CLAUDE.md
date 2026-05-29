@@ -12,16 +12,20 @@ Open <http://localhost:8765/>. Don't open `file://` — the service worker won't
 
 ## Architecture in one breath
 
-Every mutation goes through `store.dispatch(makeCommand(type, payload))`. Each command in `commands.js` declares `apply`/`revert`/`coalesceKey`, so undo/redo, action logging, and replay are one chokepoint. State is one JSON blob in IndexedDB under key `app`. The store re-emits to subscribers (currently just the renderer in `view.js`). Reads (`store.state.x`) bypass commands and are fine.
+Every mutation goes through `store.dispatch(makeCommand(type, payload))`. Each command in `commands.js` declares `apply`/`revert`/`coalesceKey`, so undo/redo, action logging, and replay are one chokepoint. The app holds **multiple story-map sessions**; `store.state` / `store.history` are the *active* session. The store re-emits to subscribers (currently just the renderer in `view.js`). Reads (`store.state.x`) bypass commands and are fine.
 
 ```
 app.js       boot: await store.ready → attachEvents → subscribe(render) → render()
 view.js      DOM render + pointer interaction (drag, edit, slot logic)
-store.js     state + History + dispatch/undo/redo + persist + seed
+store.js     active state + History + dispatch/undo/redo + persist + seed + sessions
 commands.js  COMMANDS registry (one entry per mutation kind)
 history.js   undo/redo stacks with 700 ms coalesce window
-db.js        IndexedDB single-blob wrapper
+db.js        IndexedDB: one `index` record + one heavy record per session
 ```
+
+## Sessions
+
+The app stores a list of independent story maps ("sessions"). IndexedDB (store `sessions`) holds an `index` record `{ activeId, sessions: [{id,title,createdAt,updatedAt}] }` plus one heavy record per session `{ id, state, history }`. Boot loads the index + only the active session's record. `store.sessions` / `store.activeId` drive the **Story maps…** kebab modal (`openSessions` in `view.js`); `store.createSession()` / `selectSession(id)` / `deleteSession(id)` switch the active map, each swapping in that session's own `state` **and** undo/redo `History`. Export and import act on the active session only. Deleting the last session reseeds a fresh one so there's always an active map.
 
 ## Data model
 
@@ -88,11 +92,12 @@ Then verify one PNG matches the icon (font-rendering gotcha: see the `simple-web
 
 ## Keyboard shortcuts
 
-- `Cmd/Ctrl + Z` — undo (wired through the History stack; UI-level undo button not surfaced yet)
+- `Cmd/Ctrl + Z` — undo (wired through the History stack; also the undo/redo pill in the topbar)
 - `Cmd/Ctrl + Shift + Z` / `Cmd/Ctrl + Y` — redo
 - `Space + drag` (or middle-mouse drag) — pan the canvas
 - Double-click empty canvas — create sticky at click point
 - Double-click sticky — edit; `Esc` cancels, `Cmd/Ctrl + Enter` commits
+- `?` — toggle the keyboard-shortcuts dialog (ignored while editing text)
 
 ## Deployment
 

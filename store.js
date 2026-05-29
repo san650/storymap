@@ -1,6 +1,16 @@
 import { COMMANDS, isNoOp } from './commands.js';
 import { History } from './history.js';
-import { loadState, saveState, requestPersistence } from './db.js';
+import {
+  loadIndex,
+  saveIndex,
+  loadSession,
+  saveSession,
+  deleteSessionRecord,
+  requestPersistence,
+} from './db.js';
+
+const uid = (prefix = 'sess') =>
+  `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
 const seed = () => ({
   title: 'Untitled Story Map',
@@ -56,30 +66,76 @@ const emptyState = () => ({
   cards: [],
 });
 
+const migrateCards = (state) => {
+  for (const card of state.cards) if (card.slot == null) card.slot = 0;
+  return state;
+};
+
 class Store {
   constructor() {
     this.state = seed();
     this.history = new History();
+    this.sessions = [];      // [{ id, title, createdAt, updatedAt }]
+    this.activeId = null;
     this.listeners = new Set();
     this.ready = this.#hydrate();
   }
 
   async #hydrate() {
-    const persisted = await loadState();
-    if (persisted) {
-      if (persisted.state) {
-        this.state = persisted.state;
-        // Migrate older states that predate the `slot` field.
-        for (const card of this.state.cards) {
-          if (card.slot == null) card.slot = 0;
-        }
-      }
-      if (persisted.history) this.history.hydrate(persisted.history);
+    const index = await loadIndex();
+    if (index && Array.isArray(index.sessions) && index.sessions.length) {
+      this.sessions = index.sessions;
+      this.activeId = index.sessions.some((s) => s.id === index.activeId)
+        ? index.activeId
+        : index.sessions[0].id;
+      const rec = await loadSession(this.activeId);
+      this.state = rec?.state ? migrateCards(rec.state) : seed();
+      this.history = new History();
+      if (rec?.history) this.history.hydrate(rec.history);
     } else {
-      // first launch: persist the seed so the demo data sticks
-      this.#persist();
+      // First launch: seed a single session.
+      const id = uid();
+      const now = Date.now();
+      this.activeId = id;
+      this.state = seed();
+      this.history = new History();
+      this.sessions = [{ id, title: this.state.title, createdAt: now, updatedAt: now }];
+      await this.#persist();
     }
     requestPersistence();
+  }
+
+  #activeMeta() { return this.sessions.find((s) => s.id === this.activeId); }
+
+  async #persist() {
+    const meta = this.#activeMeta();
+    if (meta) { meta.title = this.state.title; meta.updatedAt = Date.now(); }
+    try {
+      await Promise.all([
+        saveSession(this.activeId, {
+          id: this.activeId,
+          state: this.state,
+          history: this.history.serialize(),
+        }),
+        saveIndex({ activeId: this.activeId, sessions: this.sessions }),
+      ]);
+    } catch (err) {
+      console.error('persist failed', err);
+    }
+  }
+
+  async #persistIndex() {
+    try {
+      await saveIndex({ activeId: this.activeId, sessions: this.sessions });
+    } catch (err) {
+      console.error('persist index failed', err);
+    }
+  }
+
+  #loadInto(rec) {
+    this.state = rec?.state ? migrateCards(rec.state) : seed();
+    this.history = new History();
+    if (rec?.history) this.history.hydrate(rec.history);
   }
 
   subscribe(fn) {
@@ -89,16 +145,67 @@ class Store {
 
   #notify() { for (const fn of this.listeners) fn(this.state); }
 
-  async #persist() {
-    try {
-      await saveState({ state: this.state, history: this.history.serialize() });
-    } catch (err) {
-      console.error('persist failed', err);
-    }
+  // ---------- sessions ----------
+
+  createSession() {
+    const id = uid();
+    const now = Date.now();
+    this.activeId = id;
+    this.state = seed();
+    this.history = new History();
+    this.sessions.push({ id, title: this.state.title, createdAt: now, updatedAt: now });
+    this.#persist();
+    this.#notify();
+    return id;
   }
+
+  async selectSession(id) {
+    if (id === this.activeId || !this.sessions.some((s) => s.id === id)) return;
+    const rec = await loadSession(id);
+    this.activeId = id;
+    this.#loadInto(rec);
+    this.#persistIndex();
+    this.#notify();
+  }
+
+  async deleteSession(id) {
+    const idx = this.sessions.findIndex((s) => s.id === id);
+    if (idx < 0) return;
+    this.sessions.splice(idx, 1);
+    await deleteSessionRecord(id);
+
+    if (this.activeId !== id) {
+      await this.#persistIndex();
+    } else if (this.sessions.length === 0) {
+      // Deleted the last one — start fresh so there's always an active map.
+      const nid = uid();
+      const now = Date.now();
+      this.activeId = nid;
+      this.state = seed();
+      this.history = new History();
+      this.sessions.push({ id: nid, title: this.state.title, createdAt: now, updatedAt: now });
+      await this.#persist();
+    } else {
+      // Switch to the most recently edited remaining session.
+      const next = [...this.sessions].sort((a, b) => b.updatedAt - a.updatedAt)[0];
+      this.activeId = next.id;
+      this.#loadInto(await loadSession(next.id));
+      await this.#persistIndex();
+    }
+    this.#notify();
+  }
+
+  // ---------- active-map mutations ----------
 
   reset({ toEmpty = false } = {}) {
     this.state = toEmpty ? emptyState() : seed();
+    this.history.clear();
+    this.#persist();
+    this.#notify();
+  }
+
+  importState(state) {
+    this.state = state;
     this.history.clear();
     this.#persist();
     this.#notify();
