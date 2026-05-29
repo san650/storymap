@@ -1,0 +1,20 @@
+{
+  "name": "Storymap",
+  "short_name": "Storymap",
+  "description": "Collaborative story mapping canvas",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#F2EBD9",
+  "theme_color": "#F2EBD9",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

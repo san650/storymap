@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#F2EBD9"/>
+  <g transform="translate(28 28)">
+    <rect x="0"  y="0"  width="42" height="42" rx="3" fill="#F4615F" transform="rotate(-3 21 21)"/>
+    <rect x="50" y="0"  width="42" height="42" rx="3" fill="#F4615F" transform="rotate(2 71 21)"/>
+    <rect x="100" y="0" width="42" height="42" rx="3" fill="#F4615F" transform="rotate(-1 121 21)"/>
+    <rect x="0"  y="52" width="42" height="42" rx="3" fill="#F2BD3A" transform="rotate(2 21 73)"/>
+    <rect x="50" y="52" width="42" height="42" rx="3" fill="#F2BD3A" transform="rotate(-2 71 73)"/>
+    <rect x="100" y="52" width="42" height="42" rx="3" fill="#F2BD3A" transform="rotate(1 121 73)"/>
+    <rect x="-2" y="104" width="146" height="3" fill="#1B1B1B"/>
+    <rect x="0"  y="118" width="42" height="26" rx="3" fill="#A6D9B4" transform="rotate(-1 21 131)"/>
+    <rect x="50" y="118" width="42" height="26" rx="3" fill="#A6D9B4" transform="rotate(2 71 131)"/>
+    <rect x="100" y="118" width="42" height="26" rx="3" fill="#A6D9B4" transform="rotate(-2 121 131)"/>
+  </g>
+</svg>

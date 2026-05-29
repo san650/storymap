@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Storymap</title>
+  <meta name="description" content="Collaborative story mapping canvas" />
+  <meta name="theme-color" content="#F2EBD9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Storymap" />
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+
+  <link rel="apple-touch-startup-image" href="./splash/splash-1290x2796.png"
+        media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-1179x2556.png"
+        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-1284x2778.png"
+        media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-1170x2532.png"
+        media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-1125x2436.png"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-1242x2688.png"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-828x1792.png"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-1242x2208.png"
+        media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./splash/splash-750x1334.png"
+        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+
+  <link rel="stylesheet" href="./fonts/fonts.css" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <span class="bm bm-coral"></span>
+        <span class="bm bm-amber"></span>
+        <span class="bm bm-mint"></span>
+      </span>
+      <h1 class="title" contenteditable spellcheck="false" data-placeholder="Untitled Story Map">Untitled Story Map</h1>
+      <span class="brand-sub">a story map workshop</span>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" data-action="clear" type="button">Empty board</button>
+      <button class="btn btn-ghost" data-action="reset" type="button">Restore example</button>
+      <span class="actions-sep" aria-hidden="true"></span>
+      <button class="btn btn-ghost btn-icon" data-action="undo" type="button" title="Undo (⌘Z)" aria-label="Undo">↶</button>
+      <button class="btn btn-ghost btn-icon" data-action="redo" type="button" title="Redo (⌘⇧Z)" aria-label="Redo">↷</button>
+      <button class="btn btn-ghost" data-action="show-log" type="button" title="Open action log">Log</button>
+      <span class="actions-sep" aria-hidden="true"></span>
+      <button class="btn" data-action="add-column" type="button">+ Column</button>
+      <button class="btn btn-dark" data-action="add-release" type="button">+ Release line</button>
+    </div>
+  </header>
+
+  <div class="legend">
+    <span class="chip chip-flow">User flow</span>
+    <span class="chip chip-epic">Epic</span>
+    <span class="chip chip-story">Story</span>
+    <span class="legend-sep" aria-hidden="true">·</span>
+    <span class="hint">double-click empty space to add a sticky · drag to move (its band decides what it is) · double-click a sticky to rename · hover between columns to insert one · hold <kbd>space</kbd> + drag to pan</span>
+  </div>
+
+  <div id="scroller" class="scroller">
+    <div id="headers" class="headers"></div>
+    <div id="canvas" class="canvas"></div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+  </script>
+</body>
+</html>
