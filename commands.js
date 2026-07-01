@@ -64,6 +64,14 @@ export const COMMANDS = {
     revert: (s, p) => { const c = findCard(s, p.id); if (c) c.text = p.from; },
     coalesceKey: (p) => `text:${p.id}`,
   },
+  // Story-only color override. `to`/`from` are nullable tokens (null = default
+  // green). See isNoOp: null on either side never coalesces to a no-op, and two
+  // equal primitives (incl. re-picking the current color) correctly do.
+  SET_CARD_COLOR: {
+    apply: (s, p) => { const c = findCard(s, p.id); if (c) c.color = p.to; },
+    revert: (s, p) => { const c = findCard(s, p.id); if (c) c.color = p.from; },
+    coalesceKey: (p) => `color:${p.id}`,
+  },
 
   ADD_RELEASE: {
     apply: (s, p) => { s.releases.push(p.release); sortReleases(s); },

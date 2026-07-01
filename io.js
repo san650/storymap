@@ -33,6 +33,12 @@ const ensureId = (id, prefix) =>
 
 const num = (v, fallback) => (Number.isFinite(+v) ? +v : fallback);
 
+// Story-only color tokens; anything else (incl. absent) normalizes to the
+// default green. Kept even on non-story cards — it's inert until the card is a
+// story, and dropping it would lose color across a drag-through-another-band.
+const COLOR_TOKENS = ['sky', 'lilac'];
+const normalizeColor = (v) => (COLOR_TOKENS.includes(v) ? v : null);
+
 const normalizeState = (s) => ({
   title: typeof s.title === 'string' && s.title.trim() ? s.title : 'Untitled Story Map',
   columns: s.columns.map((c) => ({
@@ -52,6 +58,7 @@ const normalizeState = (s) => ({
     slot: num(c?.slot, 0),
     y: num(c?.y, 40),
     text: typeof c?.text === 'string' ? c.text : '',
+    color: normalizeColor(c?.color),
   })),
 });
 

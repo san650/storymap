@@ -1,4 +1,4 @@
-const CACHE = 'storymap-v7';
+const CACHE = 'storymap-v8';
 
 const SHELL = [
   './',

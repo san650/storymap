@@ -29,6 +29,16 @@
   --mint-deep: #1A3D27;
   --mint-edge: #79B58E;
 
+  /* Story-only override colors (see .card-story.card-c-*). Chosen outside the
+     coral/amber/mint band hues so a recolored story can't read as a flow/epic. */
+  --sky: #8FBEDA;
+  --sky-deep: #123047;
+  --sky-edge: #5E93B4;
+
+  --lilac: #C4A6D9;
+  --lilac-deep: #2E1A3D;
+  --lilac-edge: #9B79B5;
+
   --shadow-card:
     0 1px 0 rgba(255, 255, 255, 0.4) inset,
     0 1px 2px rgba(40, 28, 8, 0.10),
@@ -960,6 +970,48 @@ kbd {
   background-color: var(--mint);
   color: var(--mint-deep);
   font-size: 18px;
+}
+
+/* Story-only color overrides. Scoped to .card-story so a lingering class on a
+   flow/epic card (e.g. mid-drag across the divider) never recolors it. */
+.card-story.card-c-sky {
+  background-color: var(--sky);
+  color: var(--sky-deep);
+}
+.card-story.card-c-lilac {
+  background-color: var(--lilac);
+  color: var(--lilac-deep);
+}
+
+/* Edit-time color picker — a floating pill above a story card. Shown only while
+   the card is being edited (CSS-gated so we don't touch the edit-entry paths). */
+.color-picker {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  display: none;
+  gap: 7px;
+  padding: 6px 8px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  box-shadow: var(--shadow-card-lift);
+  z-index: 1200;
+}
+.card.editing .color-picker { display: flex; }
+.swatch {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+.swatch:hover { transform: scale(1.14); }
+.swatch-active {
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
 }
 
 .card .text {
