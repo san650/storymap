@@ -4,8 +4,10 @@ A static, offline-first PWA for Jeff-Patton-style story mapping. Vanilla HTML/CS
 
 ## Run it
 
+The PWA lives in `docs/` (GitHub Pages serves that folder as the site root). Serve from inside it so the service-worker scope matches production:
+
 ```bash
-python3 -m http.server 8765
+cd docs && python3 -m http.server 8765
 ```
 
 Open <http://localhost:8765/>. Don't open `file://` — the service worker won't register.
@@ -85,7 +87,7 @@ COL_GAP     24   // gap between adjacent columns
 Regenerate after icon changes:
 
 ```bash
-python3 ~/.claude/skills/simple-website/scripts/generate-splash.py icon.svg "#F2EBD9" splash/
+python3 ~/.claude/skills/simple-website/scripts/generate-splash.py docs/icon.svg "#F2EBD9" docs/splash/
 ```
 
 Then verify one PNG matches the icon (font-rendering gotcha: see the `simple-website/reference/icons-and-splash.md` webfont section if you ever use `<text>` in the SVG).
@@ -101,7 +103,7 @@ Then verify one PNG matches the icon (font-rendering gotcha: see the `simple-web
 
 ## Deployment
 
-GitHub Pages, deploy from `main` → `/ (root)`. `.nojekyll` is required for Pages to serve `_` files. No `CNAME` yet — add it (bare domain, one line) when a custom domain is wired up.
+GitHub Pages, deploy from `main` → `/docs`. Only `docs/` is published — repo-root files (`openspec/`, `features.md`, `CLAUDE.md`, `README.md`, `LICENSE`) stay private. `docs/.nojekyll` is required for Pages to serve `_` files. `docs/CNAME` holds the custom domain (`storymap.42.uy`), one line. Both must live inside `docs/` since that's the published root.
 
 ## Don't
 
