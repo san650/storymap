@@ -1,4 +1,4 @@
-const CACHE = 'storymap-v8';
+const CACHE = 'storymap-v10';
 
 const SHELL = [
   './',
@@ -14,7 +14,6 @@ const SHELL = [
   './db.js',
   './icon.svg',
   './fonts/fonts.css',
-  './fonts/caveat-latin.woff2',
   './fonts/fraunces-latin.woff2',
   './splash/splash-1290x2796.png',
   './splash/splash-1284x2778.png',

@@ -1,0 +1,18 @@
+# End-to-end test dependencies for the Storymap app.
+#
+# Browser automation runs against a standalone Playwright browser server. Once-off:
+#
+#   npx playwright install chromium
+#
+# Then, from this directory:
+#
+#   bundle install
+#   ruby run.rb            # boots the Playwright server + WEBrick and runs the suite
+#
+source 'https://rubygems.org'
+
+gem 'cucumber'               # BDD test runner
+gem 'playwright-ruby-client' # Playwright API client for Ruby
+gem 'rspec-expectations'     # assertions (expect(...).to ...)
+gem 'webrick'                # static server for the docs/ app under test
+gem 'websocket-driver'       # required to connect to the Playwright browser server

@@ -12,6 +12,10 @@ cd docs && python3 -m http.server 8765
 
 Open <http://localhost:8765/>. Don't open `file://` — the service worker won't register.
 
+## Tests
+
+End-to-end tests (Cucumber + Playwright over a real browser) live in `test/` — at the repo root, never under `docs/`, so Pages never publishes them. Once-off: `cd test && bundle install && npx playwright install chromium`. Run with `ruby run.rb` (whole suite) or `ruby run.rb -p smoke`. Each scenario runs in a fresh browser context (empty IndexedDB → the app seeds itself) and asserts against the persisted document. See `test/CLAUDE.md` for conventions. Playwright is version-pinned in two places that move together: `PW_VERSION` in `test/run.rb` and `playwright-ruby-client` in `test/Gemfile`.
+
 ## Architecture in one breath
 
 Every mutation goes through `store.dispatch(makeCommand(type, payload))`. Each command in `commands.js` declares `apply`/`revert`/`coalesceKey`, so undo/redo, action logging, and replay are one chokepoint. The app holds **multiple story-map sessions**; `store.state` / `store.history` are the *active* session. The store re-emits to subscribers (currently just the renderer in `view.js`). Reads (`store.state.x`) bypass commands and are fine.
