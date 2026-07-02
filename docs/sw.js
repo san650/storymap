@@ -1,4 +1,5 @@
-const CACHE = 'storymap-v10';
+const VERSION = 'v11';
+const CACHE = `storymap-${VERSION}`;
 
 const SHELL = [
   './',
@@ -28,7 +29,9 @@ const SHELL = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then((c) => c.addAll(SHELL.map((url) => new Request(url, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -38,6 +41,12 @@ self.addEventListener('activate', (event) => {
       .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'version') {
+    event.ports[0] && event.ports[0].postMessage(VERSION);
+  }
 });
 
 self.addEventListener('fetch', (event) => {

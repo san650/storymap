@@ -99,6 +99,17 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+      const sub = document.querySelector('.brand-sub');
+      const base = sub ? sub.textContent : '';
+      const showVersion = (sw) => {
+        if (!sw || !sub) return;
+        const ch = new MessageChannel();
+        ch.port1.onmessage = (e) => { if (e.data) sub.textContent = `${base} · ${e.data}`; };
+        sw.postMessage({ type: 'version' }, [ch.port2]);
+      };
+      showVersion(navigator.serviceWorker.controller);
+      navigator.serviceWorker.addEventListener('controllerchange', () =>
+        showVersion(navigator.serviceWorker.controller));
     }
   </script>
 </body>
