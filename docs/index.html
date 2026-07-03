@@ -6,6 +6,7 @@
   <title>Storymap</title>
   <meta name="description" content="Collaborative story mapping canvas" />
   <meta name="theme-color" content="#F2EBD9" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Storymap" />
@@ -107,7 +108,12 @@
         ch.port1.onmessage = (e) => { if (e.data) sub.textContent = `${base} · ${e.data}`; };
         sw.postMessage({ type: 'version' }, [ch.port2]);
       };
-      showVersion(navigator.serviceWorker.controller);
+      // Don't hang the version off `controller`: right after the auto-reload
+      // below, this page often starts uncontrolled (controller === null) and the
+      // already-activated SW never fires another `controllerchange`, so the
+      // version would silently vanish. `ready` resolves with the active
+      // registration whether or not this page is controlled yet.
+      navigator.serviceWorker.ready.then((reg) => showVersion(reg.active));
       navigator.serviceWorker.addEventListener('controllerchange', () =>
         showVersion(navigator.serviceWorker.controller));
 

@@ -1,4 +1,4 @@
-const VERSION = 'v14';
+const VERSION = 'v17';
 const CACHE = `storymap-${VERSION}`;
 
 const SHELL = [
