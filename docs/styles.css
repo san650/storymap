@@ -1038,6 +1038,15 @@ kbd {
   line-clamp: unset;
   overflow: visible;
 }
+/* Hover-to-expand peek: a clamped story reveals all its text while hovered. The
+   card's height (set inline in JS) grows via the existing .card height
+   transition; this just unclamps the text to fill it. */
+.card-expanded .text {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
 .card .text:empty::before {
   content: attr(data-placeholder);
   opacity: 0.45;
