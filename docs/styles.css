@@ -970,7 +970,8 @@ kbd {
 .card-story {
   background-color: var(--mint);
   color: var(--mint-deep);
-  font-size: 18px;
+  /* Inherit the base .card 15px, matching epic cards — readable without the
+     oversized story-only bump. */
 }
 
 /* Story-only color overrides. Scoped to .card-story so a lingering class on a

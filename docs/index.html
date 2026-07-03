@@ -110,6 +110,26 @@
       showVersion(navigator.serviceWorker.controller);
       navigator.serviceWorker.addEventListener('controllerchange', () =>
         showVersion(navigator.serviceWorker.controller));
+
+      let reloadingForUpdate = false;
+      const doReload = () => {
+        if (reloadingForUpdate) return;
+        reloadingForUpdate = true;
+        location.reload();
+      };
+      navigator.serviceWorker.addEventListener('message', (e) => {
+        if (!e.data || e.data.type !== 'RELOAD') return;
+        // Don't yank the shell out from under an active text edit (commit-on-blur model).
+        const el = document.activeElement;
+        const editing = el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+        if (editing) {
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') doReload();
+          });
+        } else {
+          doReload();
+        }
+      });
     }
   </script>
 </body>

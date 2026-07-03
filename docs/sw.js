@@ -1,4 +1,4 @@
-const VERSION = 'v12';
+const VERSION = 'v14';
 const CACHE = `storymap-${VERSION}`;
 
 const SHELL = [
@@ -36,11 +36,17 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    const oldKeys = keys.filter((k) => k.startsWith('storymap-') && k !== CACHE);
+    const wasUpdate = oldKeys.length > 0;          // leftover shell cache ⇒ this is an upgrade
+    await Promise.all(oldKeys.map((k) => caches.delete(k)));
+    await self.clients.claim();
+    if (wasUpdate) {
+      const clients = await self.clients.matchAll({ type: 'window' });
+      clients.forEach((c) => c.postMessage({ type: 'RELOAD' }));
+    }
+  })());
 });
 
 self.addEventListener('message', (event) => {
